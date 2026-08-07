@@ -49,6 +49,41 @@ input:focus,select:focus{outline:1px solid var(--acc)}
 .bar i{display:block;height:100%;background:var(--grn)}
 .note{font-size:.85rem;color:var(--mut);margin-top:12px}
 footer{padding:36px 0 60px;border-top:1px solid var(--line);color:var(--mut);font-size:.85rem}
+/* ---- v2 polish ---- */
+html{scroll-behavior:smooth}
+section,header{scroll-margin-top:64px}
+nav.top{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.top .in{max-width:900px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:4px;height:52px;overflow-x:auto;white-space:nowrap}
+nav.top .brand{font-weight:800;color:var(--txt);text-decoration:none;margin-right:10px}
+nav.top .brand em{color:var(--acc);font-style:normal}
+nav.top a.lnk{color:var(--mut);text-decoration:none;font-size:.88rem;padding:6px 10px;border-radius:6px}
+nav.top a.lnk:hover{color:var(--txt);background:var(--bg2)}
+nav.top a.tg{margin-left:auto;color:var(--acc);text-decoration:none;font-size:.88rem;font-weight:600}
+.heroglow{position:relative}
+.heroglow:before{content:"";position:absolute;inset:-40px 0 0;background:radial-gradient(600px 260px at 50% 0%,rgba(240,180,41,.14),transparent 70%);pointer-events:none}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;max-width:640px;margin:28px auto 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center}
+.stat .v{font-size:1.35rem;font-weight:800;color:var(--acc);font-variant-numeric:tabular-nums}
+.stat .v.ok{color:var(--grn)}
+.stat .l{font-size:.72rem;color:var(--mut);margin-top:2px}
+.statnote{text-align:center;color:var(--mut);font-size:.72rem;margin-top:8px}
+.card{transition:transform .15s,border-color .15s}
+.card:hover{transform:translateY(-2px);border-color:#3d444d}
+h2{display:flex;align-items:center;gap:10px}
+h2:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+/* charts */
+.chart{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px 14px 8px;margin:18px 0;position:relative}
+.chart h4{font-size:.95rem;margin:0 0 2px;color:var(--txt)}
+.chart .sub{font-size:.78rem;color:var(--mut);margin-bottom:8px}
+.chart svg{width:100%;height:auto;display:block}
+.chart .axis{fill:var(--mut);font-size:11px}
+.chart .gridln{stroke:#21262d;stroke-width:1}
+.chart .note{font-size:.75rem;color:var(--mut);margin:6px 4px 8px}
+.tip{position:absolute;pointer-events:none;background:#010409;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:.8rem;color:var(--txt);opacity:0;transition:opacity .12s;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.5);z-index:5}
+.tip b{color:var(--acc)}
+.btn{transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(240,180,41,.25)}
 .tag{display:inline-block;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:3px 12px;font-size:.8rem;color:var(--mut);margin:0 6px 8px 0}
 form.wait{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 form.wait input[type=email]{flex:1;min-width:220px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:12px}
@@ -57,13 +92,29 @@ form.wait input[type=email]{flex:1;min-width:220px;background:var(--bg);border:1
 </head>
 <body>
 
-<header>
+<nav class="top"><div class="in">
+<a class="brand" href="#top">Проп-<em>Гид</em></a>
+<a class="lnk" href="#guide">Гайд</a>
+<a class="lnk" href="#calc">Калькулятор</a>
+<a class="lnk" href="#case">Кейс</a>
+<a class="lnk" href="#firms">Фирмы</a>
+<a class="tg" href="https://t.me/propgid" target="_blank" rel="noopener">@propgid</a>
+</div></nav>
+
+<header id="top" class="heroglow">
 <div class="wrap">
 <div style="margin-bottom:14px"><span class="tag">проп-трейдинг</span><span class="tag">риск-менеджмент</span><span class="tag">Монте-Карло</span></div>
 <h1>Проп-челлендж проходит <em>математика</em>,<br>а не удача</h1>
 <p class="sub">Гайд по прохождению проп-челленджей (HyroTrader, FTMO и аналогов) от трейдера, который прямо сейчас проходит фазу 1 алгоритмическим стеком. Без обещаний «×10 за месяц» — только вероятности, размер риска и правила, о которые разбиваются 90% участников.</p>
 <a class="btn" href="#calc">Посчитать мои шансы</a>
 <a class="btn ghost" href="#guide">Читать гайд</a>
+<div class="stats">
+<div class="stat"><div class="v ok">+3.97%</div><div class="l">прогресс фазы 1 (цель +10%)</div></div>
+<div class="stat"><div class="v">25</div><div class="l">дней в челлендже</div></div>
+<div class="stat"><div class="v">0.03%</div><div class="l">просадка от пика</div></div>
+<div class="stat"><div class="v ok">0</div><div class="l">нарушений лимитов</div></div>
+</div>
+<p class="statnote">живые цифры нашего челленджа · обновлено 07.08.2026 · подробности в <a href="https://t.me/propgid" style="color:var(--acc)">@propgid</a></p>
 </div>
 </header>
 
@@ -92,6 +143,13 @@ form.wait input[type=email]{flex:1;min-width:220px;background:var(--bg);border:1
 <tr><td>2%</td><td class="num">−16%</td><td class="num bad">bust</td></tr>
 <tr><td>3%</td><td class="num">−24%</td><td class="num bad">bust дважды</td></tr>
 </table>
+<div class="chart" id="riskChart">
+<h4>Вероятность пройти обе фазы vs риск на сделку</h4>
+<div class="sub">Монте-Карло 24 000 симуляций · система из примера: винрейт 45%, тейк 2R, 10 сделок/мес · дневной лимит 5% (буфер 1%)</div>
+<div class="tip" id="riskTip"></div>
+<svg id="riskSvg" viewBox="0 0 640 300" role="img" aria-label="Столбчатая диаграмма: вероятность прохождения по уровням риска"></svg>
+<div class="note">Обрыв на 2%: два стопа в один день = −4% = дневной лимит с буфером. Слишком мало риска (0.5%) — тоже хуже: не успеваешь дойти до цели за год. Зона выживания — 0.75–1.25%.</div>
+</div>
 <h3>2. Дневной буфер: свой лимит строже лимита фирмы</h3>
 <p>Если фирма режет на −5% в день — ваш личный стоп-день должен быть −3…−4%. Плавающий убыток внутри дня фирма видит, а ваша дневная свеча — нет. Буфер 1% спасает от «формально прошёл по закрытию, но интрадей зацепил лимит».</p>
 <h3>3. Троттлинг: просадка >4% → риск пополам</h3>
@@ -140,8 +198,14 @@ form.wait input[type=email]{flex:1;min-width:220px;background:var(--bg);border:1
 
 <section>
 <div class="wrap">
-<h2><span>04.</span> Живой кейс: наш челлендж прямо сейчас</h2>
+<h2 id="case"><span>04.</span> Живой кейс: наш челлендж прямо сейчас</h2>
 <p>Мы прошли этот путь не в теории: MC-расчёт → выбор фирмы, где алгоритмическая торговля разрешена письменно → запуск портфеля из 7 систем с риском 1% и троттлингом.</p>
+<div class="chart" id="eqChart">
+<h4>Эквити фазы 1 — путь к цели +10%</h4>
+<div class="sub">% от стартового баланса по дневным закрытиям · старт 14.07.2026 · без ретуши</div>
+<div class="tip" id="eqTip"></div>
+<svg id="eqSvg" viewBox="0 0 640 320" role="img" aria-label="Линейный график эквити челленджа от старта фазы"></svg>
+</div>
 <table>
 <tr><th>Параметр</th><th>Значение</th></tr>
 <tr><td>Расчётная вероятность пройти обе фазы</td><td class="ok">89.4% (5000 симуляций)</td></tr>
@@ -266,6 +330,64 @@ function runCalc(){
   document.getElementById('res').classList.add('show');
 }
 function waitOk(f){fetch(f.action,{method:'POST',body:new FormData(f),headers:{Accept:'application/json'}}).then(()=>{document.getElementById('okmsg').style.display='block';f.reset()});return false}
+
+/* ---------- charts (vanilla SVG) ---------- */
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function showTip(tip,box,html,x,y){tip.innerHTML=html;tip.style.opacity=1;const r=box.getBoundingClientRect();let lx=x-r.left+14,ly=y-r.top-34;if(lx>r.width-160)lx-=170;tip.style.left=lx+'px';tip.style.top=ly+'px'}
+function hideTip(tip){tip.style.opacity=0}
+
+/* --- риск → вероятность (24k симуляций, посчитано 07.08.2026 этим же движком) --- */
+(function(){
+  const D=[{r:'0.5%',v:90.8,b:0.0},{r:'0.75%',v:94.1,b:0.1},{r:'1%',v:94.8,b:0.7},{r:'1.5%',v:88.8,b:5.9},{r:'2%',v:50.2,b:34.2},{r:'3%',v:53.5,b:32.0}];
+  const svg=document.getElementById('riskSvg');if(!svg)return;
+  const box=document.getElementById('riskChart'),tip=document.getElementById('riskTip');
+  const W=640,H=300,L=44,R=16,T=18,B=34,pw=W-L-R,ph=H-T-B;
+  const ymax=100;
+  for(let yv=0;yv<=100;yv+=25){const y=T+ph-yv/ymax*ph;el('line',{x1:L,x2:W-R,y1:y,y2:y,class:'gridln'},svg);el('text',{x:L-8,y:y+4,'text-anchor':'end',class:'axis'},svg).textContent=yv+'%'}
+  const bw=Math.min(56,pw/D.length*0.55),step=pw/D.length;
+  /* зона выживания 0.75–1.25% (столбцы 2 и 3) */
+  const zx=L+step*1+ (step-bw)/2 -8, zw=step*2 - (step-bw) +16;
+  el('rect',{x:zx,y:T,width:zw,height:ph,fill:'rgba(63,185,80,.07)'},svg);
+  el('text',{x:zx+zw/2,y:T+ph-10,'text-anchor':'middle',class:'axis',fill:'#3fb950'},svg).textContent='зона выживания';
+  D.forEach((d,i)=>{
+    const x=L+step*i+(step-bw)/2,bh=d.v/ymax*ph,y=T+ph-bh;
+    const bar=el('path',{d:`M${x},${T+ph} L${x},${y+4} Q${x},${y} ${x+4},${y} L${x+bw-4},${y} Q${x+bw},${y} ${x+bw},${y+4} L${x+bw},${T+ph} Z`,fill:'#f0b429'},svg);
+    if(d.v===94.8||d.v===50.2){el('text',{x:x+bw/2,y:y-7,'text-anchor':'middle',class:'axis',fill:'#e6edf3','font-weight':'700'},svg).textContent=d.v+'%'}
+    el('text',{x:x+bw/2,y:T+ph+18,'text-anchor':'middle',class:'axis'},svg).textContent=d.r;
+    const hit=el('rect',{x:L+step*i,y:T,width:step,height:ph,fill:'transparent'},svg);
+    const over=e=>{bar.setAttribute('fill','#ffd25e');showTip(tip,box,`риск <b>${d.r}</b>: пройти обе фазы <b>${d.v}%</b><br>слить лимиты: ${d.b}%`,e.clientX,e.clientY)};
+    hit.addEventListener('mousemove',over);hit.addEventListener('mouseleave',()=>{bar.setAttribute('fill','#f0b429');hideTip(tip)});
+  });
+})();
+
+/* --- эквити фазы 1 (реальные дневные закрытия из журнала) --- */
+(function(){
+  const D=[['14.07',0],['20.07',0],['22.07',1.98],['24.07',1.97],['26.07',1.96],['28.07',1.93],['30.07',1.92],['06.08',3.80],['07.08',3.97]];
+  const svg=document.getElementById('eqSvg');if(!svg)return;
+  const box=document.getElementById('eqChart'),tip=document.getElementById('eqTip');
+  const W=640,H=320,L=44,R=70,T=16,B=30,pw=W-L-R,ph=H-T-B,ymax=10.8;
+  for(let yv=0;yv<=10;yv+=2){const y=T+ph-yv/ymax*ph;el('line',{x1:L,x2:W-R,y1:y,y2:y,class:'gridln'},svg);el('text',{x:L-8,y:y+4,'text-anchor':'end',class:'axis'},svg).textContent='+'+yv+'%'}
+  const gy=T+ph-10/ymax*ph;
+  el('line',{x1:L,x2:W-R,y1:gy,y2:gy,stroke:'#3fb950','stroke-width':1.5,'stroke-dasharray':'6 5'},svg);
+  el('text',{x:W-R+6,y:gy+4,class:'axis',fill:'#3fb950'},svg).textContent='цель +10%';
+  const X=i=>L+i/(D.length-1)*pw, Y=v=>T+ph-v/ymax*ph;
+  const grad=el('linearGradient',{id:'eqg',x1:0,y1:0,x2:0,y2:1},el('defs',{},svg));
+  el('stop',{offset:'0%','stop-color':'rgba(240,180,41,.28)'},grad);el('stop',{offset:'100%','stop-color':'rgba(240,180,41,0)'},grad);
+  let area=`M${X(0)},${Y(D[0][1])}`;D.forEach((d,i)=>{area+=` L${X(i)},${Y(d[1])}`});area+=` L${X(D.length-1)},${T+ph} L${X(0)},${T+ph} Z`;
+  el('path',{d:area,fill:'url(#eqg)'},svg);
+  let line='';D.forEach((d,i)=>{line+=(i?' L':'M')+X(i)+','+Y(d[1])});
+  el('path',{d:line,fill:'none',stroke:'#f0b429','stroke-width':2.5,'stroke-linejoin':'round','stroke-linecap':'round'},svg);
+  el('text',{x:X(2),y:Y(1.98)-12,'text-anchor':'middle',class:'axis',fill:'#3fb950'},svg).textContent='+2R золото';
+  D.forEach((d,i)=>{
+    const dot=el('circle',{cx:X(i),cy:Y(d[1]),r:4,fill:'#0d1117',stroke:'#f0b429','stroke-width':2},svg);
+    const hit=el('circle',{cx:X(i),cy:Y(d[1]),r:15,fill:'transparent'},svg);
+    hit.addEventListener('mousemove',e=>{dot.setAttribute('r',6);showTip(tip,box,`<b>${d[0]}</b>: ${d[1]>0?'+':''}${d[1].toFixed(2)}% от старта`,e.clientX,e.clientY)});
+    hit.addEventListener('mouseleave',()=>{dot.setAttribute('r',4);hideTip(tip)});
+    if(i%2===0||i===D.length-1)el('text',{x:X(i),y:T+ph+18,'text-anchor':'middle',class:'axis'},svg).textContent=d[0];
+  });
+  el('text',{x:X(D.length-1)+10,y:Y(3.97)+4,class:'axis',fill:'#e6edf3','font-weight':'700'},svg).textContent='+3.97%';
+})();
 </script>
 </body>
 </html>
