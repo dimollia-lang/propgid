@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Проп-Гид — как пройти проп-челлендж математикой, а не удачей</title>
+<meta name="description" content="Гайд по прохождению проп-челленджей (HyroTrader, FTMO и аналоги) + Монте-Карло калькулятор вероятности прохождения. Реальный опыт, честная математика.">
+<style>
+:root{--bg:#0d1117;--bg2:#161b22;--card:#1c2128;--line:#30363d;--txt:#e6edf3;--mut:#8b949e;--acc:#f0b429;--grn:#3fb950;--red:#f85149;--blu:#58a6ff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+header{padding:60px 0 40px;text-align:center;background:linear-gradient(180deg,#161b22,#0d1117)}
+h1{font-size:2.2rem;line-height:1.25;margin-bottom:14px}
+h1 em{color:var(--acc);font-style:normal}
+.sub{color:var(--mut);max-width:640px;margin:0 auto 26px}
+.btn{display:inline-block;background:var(--acc);color:#111;font-weight:700;padding:13px 26px;border-radius:8px;text-decoration:none;border:none;font-size:1rem;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc);margin-left:10px}
+section{padding:46px 0;border-top:1px solid var(--line)}
+h2{font-size:1.5rem;margin-bottom:18px}
+h2 span{color:var(--acc)}
+h3{font-size:1.1rem;margin:18px 0 8px}
+p{margin-bottom:12px}
+.mut{color:var(--mut)}
+.grid{display:grid;gap:16px}
+@media(min-width:700px){.grid.c2{grid-template-columns:1fr 1fr}.grid.c3{grid-template-columns:1fr 1fr 1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card b{color:var(--acc)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+th{background:var(--bg2);color:var(--mut);font-weight:600}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.ok{color:var(--grn)}.bad{color:var(--red)}.warn{color:var(--acc)}
+/* calculator */
+.calc{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:22px}
+.calc .grid{gap:12px}
+label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:4px}
+input[type=number],select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--txt);padding:9px 10px;font-size:.95rem}
+input:focus,select:focus{outline:1px solid var(--acc)}
+.chk{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--txt);margin-top:8px}
+.res{margin-top:20px;display:none}
+.res.show{display:block}
+.bigrow{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px}
+.big{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center}
+.big .v{font-size:1.7rem;font-weight:800}
+.big .l{font-size:.8rem;color:var(--mut)}
+.bar{height:10px;background:#21262d;border-radius:5px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--grn)}
+.note{font-size:.85rem;color:var(--mut);margin-top:12px}
+footer{padding:36px 0 60px;border-top:1px solid var(--line);color:var(--mut);font-size:.85rem}
+.tag{display:inline-block;background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:3px 12px;font-size:.8rem;color:var(--mut);margin:0 6px 8px 0}
+form.wait{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+form.wait input[type=email]{flex:1;min-width:220px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:12px}
+.okmsg{color:var(--grn);display:none;margin-top:10px}
+</style>
+</head>
+<body>
+
+<header>
+<div class="wrap">
+<div style="margin-bottom:14px"><span class="tag">проп-трейдинг</span><span class="tag">риск-менеджмент</span><span class="tag">Монте-Карло</span></div>
+<h1>Проп-челлендж проходит <em>математика</em>,<br>а не удача</h1>
+<p class="sub">Гайд по прохождению проп-челленджей (HyroTrader, FTMO и аналогов) от трейдера, который прямо сейчас проходит фазу 1 алгоритмическим стеком. Без обещаний «×10 за месяц» — только вероятности, размер риска и правила, о которые разбиваются 90% участников.</p>
+<a class="btn" href="#calc">Посчитать мои шансы</a>
+<a class="btn ghost" href="#guide">Читать гайд</a>
+</div>
+</header>
+
+<section id="guide">
+<div class="wrap">
+<h2><span>01.</span> Что такое проп-челлендж на самом деле</h2>
+<p>Проп-фирма даёт торговать её капиталом ($25–200K) и забирает себе 10–30% прибыли. Но сначала — платный экзамен: «челлендж». Типовая схема 2-step: <b>фаза 1 — сделать +10%</b>, фаза 2 — ещё +5%, и всё это не нарушив лимиты просадки.</p>
+<div class="grid c3">
+<div class="card"><b>Дневной лимит</b><br>Обычно −5% за день — и челлендж сгорел. Считается от equity на начале дня, включая плавающий убыток.</div>
+<div class="card"><b>Общая просадка</b><br>−10% от старта (static) или от пика (trailing — строже). Уточняйте у фирмы письменно: это меняет всю математику.</div>
+<div class="card"><b>Скрытые правила</b><br>Обязательный SL, consistency-правила (день не больше 40% профита), запрет ботов/копитрейдинга у части фирм. Читать ПРАВИЛА, не лендинг.</div>
+</div>
+<p style="margin-top:14px" class="mut">Бизнес-модель фирм честно цинична: большинство платит за экзамен и заваливает его. Ваша задача — оказаться в меньшинстве, у которого прибыль/просадка управляются, а не «повезло».</p>
+</div>
+</section>
+
+<section>
+<div class="wrap">
+<h2><span>02.</span> Пять правил, которые решают всё</h2>
+<h3>1. Риск на сделку ≤ 1% — не потому что «так принято»</h3>
+<p>При риске 1% серия из 8 стопов подряд = −8%. Неприятно, но живы. При риске 3% та же серия = −24%: челлендж мёртв. Серии стопов — не «чёрный лебедь», а норма: при винрейте 45% серия из 8 убыточных где-то на дистанции 250 сделок имеет вероятность ~85%.</p>
+<table>
+<tr><th>Риск/сделку</th><th class="num">8 стопов подряд</th><th class="num">Выживание</th></tr>
+<tr><td>0.5%</td><td class="num">−4%</td><td class="num ok">легко</td></tr>
+<tr><td>1%</td><td class="num">−8%</td><td class="num warn">на грани (при static 10%)</td></tr>
+<tr><td>2%</td><td class="num">−16%</td><td class="num bad">bust</td></tr>
+<tr><td>3%</td><td class="num">−24%</td><td class="num bad">bust дважды</td></tr>
+</table>
+<h3>2. Дневной буфер: свой лимит строже лимита фирмы</h3>
+<p>Если фирма режет на −5% в день — ваш личный стоп-день должен быть −3…−4%. Плавающий убыток внутри дня фирма видит, а ваша дневная свеча — нет. Буфер 1% спасает от «формально прошёл по закрытию, но интрадей зацепил лимит».</p>
+<h3>3. Троттлинг: просадка >4% → риск пополам</h3>
+<p>Автоматическое правило, ломающее спираль тильта: каждый следующий стоп в серии стоит меньше предыдущего. Восстановление медленнее, зато вероятность bust падает в разы (проверено на 5000 симуляций — см. калькулятор).</p>
+<h3>4. Цельтесь медленно: 100+ дней — это нормально</h3>
+<p>Маркетинг фирм продаёт «пройди за неделю». Математика говорит: система с положительным ожиданием и риском 1% проходит фазу 1 за медианные 60–130 дней. Все «прошёл за 5 дней» — это риск 5%+ и выживший из тысячи таких же, о которых вы не услышите.</p>
+<h3>5. Знайте свои числа ДО оплаты</h3>
+<p>Винрейт, средний тейк в R, средний стоп в R, сделок в месяц — по бэктесту или журналу минимум за полгода. Нет этих чисел — вы покупаете лотерейный билет, а не экзамен. Есть числа — вероятность прохождения считается за 10 секунд ниже.</p>
+</div>
+</section>
+
+<section id="calc">
+<div class="wrap">
+<h2><span>03.</span> Калькулятор: вероятность пройти челлендж</h2>
+<p class="mut">Монте-Карло, 5 000 симуляций на фазу. Та же методика, которой мы считали собственный челлендж перед оплатой (получили 89% на портфеле — и пошли). Всё считается в браузере, ничего никуда не отправляется.</p>
+<div class="calc">
+<div class="grid c3">
+<div><label>Винрейт, %</label><input type="number" id="wr" value="45" min="10" max="90" step="1"></div>
+<div><label>Средний профит, R</label><input type="number" id="aw" value="2.0" min="0.3" max="10" step="0.1"></div>
+<div><label>Средний убыток, R</label><input type="number" id="al" value="1.0" min="0.5" max="3" step="0.1"></div>
+<div><label>Риск на сделку, % от счёта</label><input type="number" id="risk" value="1.0" min="0.1" max="5" step="0.05"></div>
+<div><label>Сделок в месяц</label><input type="number" id="tpm" value="10" min="1" max="200" step="1"></div>
+<div><label>Горизонт на фазу, дней</label><input type="number" id="hor" value="365" min="30" max="730" step="5"></div>
+<div><label>Цель фазы 1, %</label><input type="number" id="t1" value="10" min="3" max="30" step="1"></div>
+<div><label>Цель фазы 2, %</label><input type="number" id="t2" value="5" min="0" max="30" step="1"></div>
+<div><label>Макс. просадка, %</label><input type="number" id="mdd" value="10" min="3" max="30" step="1"></div>
+<div><label>Дневной лимит фирмы, %</label><input type="number" id="dl" value="5" min="1" max="20" step="0.5"></div>
+<div><label>Свой дневной буфер, %</label><input type="number" id="db" value="1" min="0" max="5" step="0.5"></div>
+<div><label>Тип просадки</label><select id="ddtype"><option value="static" selected>Static (от старта)</option><option value="trail">Trailing (от пика)</option></select></div>
+</div>
+<div class="chk"><input type="checkbox" id="thr" checked> <span>Троттлинг: при просадке >4% от пика риск ×0.5</span></div>
+<div style="margin-top:16px"><button class="btn" onclick="runCalc()">Посчитать вероятность</button></div>
+<div class="res" id="res">
+<div class="bigrow">
+<div class="big"><div class="v" id="rBoth">—</div><div class="l">пройти обе фазы</div><div class="bar"><i id="bBoth" style="width:0"></i></div></div>
+<div class="big"><div class="v" id="rP1">—</div><div class="l">пройти фазу 1</div><div class="bar"><i id="bP1" style="width:0"></i></div></div>
+<div class="big"><div class="v" id="rBust">—</div><div class="l">слить лимиты (bust)</div><div class="bar"><i id="bBust" style="width:0;background:var(--red)"></i></div></div>
+<div class="big"><div class="v" id="rDays">—</div><div class="l">медиана дней (обе фазы)</div></div>
+</div>
+<div id="verdict" class="card"></div>
+<p class="note">Модель: сделки Пуассоном по дням, дневной стоп = лимит фирмы минус ваш буфер (нарушение = bust), просадка считается по закрытию дня. Реальность чуть жёстче за счёт интрадей-флоатинга — поэтому буфер обязателен. Это оценка, не гарантия.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="wrap">
+<h2><span>04.</span> Живой кейс: наш челлендж прямо сейчас</h2>
+<p>Мы прошли этот путь не в теории: MC-расчёт → выбор фирмы, где алгоритмическая торговля разрешена письменно → запуск портфеля из 7 систем с риском 1% и троттлингом.</p>
+<table>
+<tr><th>Параметр</th><th>Значение</th></tr>
+<tr><td>Расчётная вероятность пройти обе фазы</td><td class="ok">89.4% (5000 симуляций)</td></tr>
+<tr><td>Фаза 1, прогресс на день 23</td><td class="ok">+3.7% из +10% при просадке от пика &lt;0.5%</td></tr>
+<tr><td>Сделок за 23 дня</td><td>2 (фильтры отсеяли ~5 входов — и правильно)</td></tr>
+<tr><td>Лучшая сделка</td><td class="ok">+~2R (золото, тренд)</td></tr>
+<tr><td>Нарушений лимитов</td><td class="ok">0</td></tr>
+</table>
+<p class="mut">Скучно? Именно так выглядит проходимый челлендж: редкие сделки, крошечная просадка, недели ожидания. Драйв оставьте тем, кто платит за экзамен повторно.</p>
+</div>
+</section>
+
+<section>
+<div class="wrap">
+<h2><span>05.</span> Ловушки, о которых узнают слишком поздно</h2>
+<div class="grid c2">
+<div class="card"><b>«Боты разрешены» на словах</b><br>У части фирм автоторговля запрещена правилами, а мониторят по API. Профит конфискуют при выводе. Требуйте подтверждение письмом от саппорта — как сделали мы.</div>
+<div class="card"><b>Static vs Trailing DD</b><br>Trailing-просадка от пика на 30–40% снижает вероятность прохождения при тех же параметрах. Это первый вопрос к фирме, не последний.</div>
+<div class="card"><b>Consistency rule</b><br>«Один день не больше 40% профита фазы» ломает стратегии с редкими крупными тейками. Проверьте своё распределение сделок до оплаты.</div>
+<div class="card"><b>Обязательный SL за N минут</b><br>Частое правило: стоп должен стоять через 3–5 минут после входа. Для ручной торговли — дисциплина, для ботов — строчка кода. Нарушение = дисквалификация.</div>
+<div class="card"><b>Минимум торговых дней</b><br>5–10 дней со сделками на фазу. При редких системах (дневные тренды) следите, чтобы минимум набрался — время фазы может быть не ограничено, а минимум дней обязателен.</div>
+<div class="card"><b>Второй счёт «на демо»</b><br>Один счёт = один челлендж. Ручные сделки на том же счёте, где работает системный портфель, ломают и статистику, и комплаенс.</div>
+</div>
+</div>
+</section>
+
+<section id="firms">
+<div class="wrap">
+<h2><span>06.</span> Проверенные фирмы: кто реально платит (август 2026)</h2>
+<p class="mut">Критерии попадания в таблицу: история выплат от 2 лет ИЛИ независимо верифицированные payout-пруфы, отсутствие скандалов с заморозкой выводов, внятные правила. Данные на 08.2026 — перед оплатой перепроверяйте на сайте фирмы: индустрия меняется за месяц.</p>
+<div style="overflow-x:auto">
+<table>
+<tr><th>Фирма</th><th>Рынок</th><th>Платит с</th><th>Сплит</th><th>Алго/боты</th><th>Примечание</th></tr>
+<tr><td><b>FTMO</b></td><td>Forex/CFD/металлы</td><td>2015 · 99.8% вовремя</td><td>80→90%</td><td>свои EA — да</td><td>эталон надёжности; недоступна из РФ/РБ (ок для Израиля/ЕС)</td></tr>
+<tr><td><b>Topstep</b></td><td>Фьючерсы CME</td><td>2012 · старейшая</td><td>до 90%</td><td>ограниченно</td><td>для фьючерсных трейдеров — первый выбор</td></tr>
+<tr><td><b>FundedNext</b></td><td>Forex/CFD</td><td>2022 · 60K+ трейдеров</td><td>85→95%</td><td>EA с оговорками</td><td>выплаты раз в 2 недели; крипты нет</td></tr>
+<tr><td><b>The5ers</b></td><td>Forex</td><td>2016</td><td>до 100% на скейле</td><td>да</td><td>инстант-фандинг без экзамена (дороже)</td></tr>
+<tr><td><b>HyroTrader</b></td><td>Крипта (Bybit, реальный стакан)</td><td>2020</td><td>70→90%</td><td><b>да, письменно</b></td><td>мы проходим её сами; SL обязателен, static DD 10% подтверждён саппортом</td></tr>
+<tr><td><b>Breakout</b></td><td>Крипта (Kraken-backed)</td><td>2023</td><td>80% сразу</td><td>да</td><td>без кэпа на вывод; бэкинг Kraken — редкий класс надёжности для крипто-пропа</td></tr>
+</table>
+</div>
+<h3 style="margin-top:22px">Анти-лист: чему нас научили 80+ трупов индустрии</h3>
+<p>За 2024–2025 закрылось <b>80–100 проп-фирм</b> — каждая седьмая. The Funded Trader заморозила ~$2M выплат и разгребает до сих пор; True Forex Funds ушла с $1.2M долгов перед трейдерами; MyFundedFX закрылась в феврале 2026 без предупреждения. Вывод: <b>фирма без многолетней истории выплат — это встречная ставка на её выживание</b>, и она не в вашу пользу.</p>
+<div class="grid c2" style="margin-top:14px">
+<div class="card"><b>5 проверок перед оплатой</b><br>1) Публичные payout-пруфы и история ≥2 лет. 2) Письменный ответ саппорта: боты, static/trailing DD, ваш инструмент доступен. 3) Реальный стакан или честный симулятор — что именно? 4) Юрлицо и возвратный способ оплаты. 5) Профит выводить сразу по минималке, не копить на счёте фирмы.</div>
+<div class="card"><b>Красные флаги</b><br>Ноль независимых payout-пруфов · оплата только USDT на кошелёк · «боты запрещены» мелким шрифтом при разрешающем лендинге · консистенси-правила, добавленные задним числом · скидки 90% каждую неделю (кассовый разрыв кричит о себе сам).</div>
+</div>
+<p class="note" style="margin-top:12px">Раскрытие: часть ссылок на этой странице может быть партнёрскими — фирма платит нам процент с покупки челленджа, вам это ничего не стоит. В таблицу фирмы попадают по критериям выше, а не по размеру комиссии — анти-лист тому свидетель.</p>
+</div>
+</section>
+
+<section id="cta">
+<div class="wrap">
+<h2><span>07.</span> Дальше — больше</h2>
+<p>Готовим разборы: сравнение проп-фирм под алготорговлю, готовые пресеты риска под static/trailing, журнал нашего челленджа до выплаты (или честного провала — как получится).</p>
+<form class="wait" action="https://formspree.io/f/xnjyekar" method="POST" onsubmit="return waitOk(this)">
+<input type="hidden" name="project" value="prop-guide">
+<input type="email" name="email" placeholder="ваш@email — пришлём следующий разбор" required>
+<button class="btn" type="submit">Хочу разборы</button>
+</form>
+<p class="okmsg" id="okmsg">Готово! Письмо придёт, когда выйдет следующий материал.</p>
+</div>
+</section>
+
+<footer>
+<div class="wrap">
+<p><b>Дисклеймер:</b> материал образовательный, не является инвестиционной рекомендацией. Проп-челленджи — платные экзамены с отрицательным матожиданием для большинства участников; торговля с плечом может привести к потере средств. Все цифры вероятностей — модельные оценки, а не обещания результата.</p>
+<p style="margin-top:8px">© 2026 Проп-Гид · сделано трейдером для трейдеров</p>
+</div>
+</footer>
+
+<script>
+function poisson(lam){let L=Math.exp(-lam),k=0,p=1;do{k++;p*=Math.random()}while(p>L);return k-1}
+function median(a){if(!a.length)return 0;a.sort((x,y)=>x-y);return a[Math.floor(a.length/2)]}
+function simPhase(p,target){
+  let pass=0,bust=0,days=[];
+  for(let s=0;s<p.sims;s++){
+    let eq=1,peak=1,done=0,d=0;
+    for(d=1;d<=p.hor;d++){
+      let riskEff=p.risk;
+      if(p.thr&&(peak-eq)/peak>0.04)riskEff=p.risk/2;
+      let n=poisson(p.tpm/30),pnl=0,violated=false;
+      for(let t=0;t<n;t++){
+        pnl+=(Math.random()<p.wr?p.aw:-p.al)*riskEff;
+        if(pnl<=-p.dailyFail){violated=true;break}
+      }
+      if(violated){done=-1;break}
+      eq*=(1+pnl);
+      if(eq>peak)peak=eq;
+      const ddRef=p.static?1:peak;
+      if(eq<=ddRef*(1-p.mdd)){done=-1;break}
+      if(eq>=1+target){done=1;break}
+    }
+    if(done===1){pass++;days.push(d)}else if(done===-1){bust++}
+  }
+  return{pass:pass/p.sims,bust:bust/p.sims,med:median(days)}
+}
+function runCalc(){
+  const g=id=>parseFloat(document.getElementById(id).value);
+  const p={wr:g('wr')/100,aw:g('aw'),al:g('al'),risk:g('risk')/100,tpm:g('tpm'),hor:g('hor'),
+    mdd:g('mdd')/100,dailyFail:(g('dl')-g('db'))/100,thr:document.getElementById('thr').checked,
+    static:document.getElementById('ddtype').value==='static',sims:5000};
+  if(p.dailyFail<=0){alert('Буфер не может съедать весь дневной лимит');return}
+  const f1=simPhase(p,g('t1')/100),f2=g('t2')>0?simPhase(p,g('t2')/100):{pass:1,bust:0,med:0};
+  const both=f1.pass*f2.pass;
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  set('rBoth',(both*100).toFixed(1)+'%');set('rP1',(f1.pass*100).toFixed(1)+'%');
+  set('rBust',(f1.bust*100).toFixed(1)+'%');set('rDays',f1.med+f2.med);
+  document.getElementById('bBoth').style.width=(both*100)+'%';
+  document.getElementById('bP1').style.width=(f1.pass*100)+'%';
+  document.getElementById('bBust').style.width=(f1.bust*100)+'%';
+  const v=document.getElementById('verdict');
+  const ev=p.wr*p.aw-(1-p.wr)*p.al;
+  let msg;
+  if(ev<=0)msg='<b class="bad">Ожидание системы ≤ 0R.</b> Никакой риск-менеджмент не вытянет систему без эджа — сначала стратегия, потом челлендж.';
+  else if(both>=0.8)msg='<b class="ok">Сильный конфиг.</b> Вероятность выше 80% — уровень, с которым мы сами заходили в челлендж. Главный враг теперь — дисциплина исполнения.';
+  else if(both>=0.6)msg='<b class="warn">Проходимо, но с запасом прочности похуже.</b> Попробуйте риск пониже или троттлинг — часто это дешёвый способ добавить 5–10 п.п. вероятности.';
+  else msg='<b class="bad">Меньше 60% — лотерея за ваши деньги.</b> Снизьте риск, улучшите R:R или наберите статистику системы. Фирма охотно продаст вам второй экзамен.';
+  v.innerHTML=msg+'<div class="note">Ожидание: '+ev.toFixed(2)+'R/сделку · дневной стоп: −'+(p.dailyFail*100).toFixed(1)+'% · просадка: '+(p.static?'static':'trailing')+'</div>';
+  document.getElementById('res').classList.add('show');
+}
+function waitOk(f){fetch(f.action,{method:'POST',body:new FormData(f),headers:{Accept:'application/json'}}).then(()=>{document.getElementById('okmsg').style.display='block';f.reset()});return false}
+</script>
+</body>
+</html>
