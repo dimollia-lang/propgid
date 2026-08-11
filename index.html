@@ -91,16 +91,29 @@ form.wait{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 form.wait input[type=email]{flex:1;min-width:220px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:12px}
 .okmsg{color:var(--grn);display:none;margin-top:10px}
 /* ---- trading backdrop ---- */
-body{background:radial-gradient(900px 420px at 12% -8%,rgba(240,180,41,.09),transparent 60%),radial-gradient(820px 400px at 88% 2%,rgba(88,166,255,.07),transparent 60%),var(--bg);background-attachment:fixed}
-body:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background-image:linear-gradient(rgba(139,148,158,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(139,148,158,.07) 1px,transparent 1px);background-size:56px 56px}
-body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 80% at 50% 0%,transparent 40%,rgba(13,17,23,.75) 100%)}
-header{background:linear-gradient(180deg,rgba(22,27,34,.9),rgba(13,17,23,0))}
+body{background:
+  radial-gradient(1000px 520px at 6% -12%,rgba(240,180,41,.26),transparent 58%),
+  radial-gradient(900px 480px at 96% -4%,rgba(88,166,255,.24),transparent 58%),
+  radial-gradient(760px 460px at 78% 42%,rgba(63,185,80,.14),transparent 60%),
+  radial-gradient(720px 440px at 14% 78%,rgba(248,81,73,.13),transparent 60%),
+  linear-gradient(180deg,#111a2b 0%,#0d1117 45%,#0f1420 100%);
+  background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(88,166,255,.16) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(88,166,255,.16) 1px,transparent 1px),
+    linear-gradient(rgba(139,148,158,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(139,148,158,.07) 1px,transparent 1px);
+  background-size:280px 280px,280px 280px,56px 56px,56px 56px}
+body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(130% 90% at 50% 0%,transparent 55%,rgba(8,11,16,.72) 100%)}
+header{background:linear-gradient(180deg,rgba(20,28,44,.72),rgba(13,17,23,0))}
 header .wrap{position:relative;z-index:1}
-.candles{position:absolute;left:0;right:0;bottom:0;width:100%;height:160px;opacity:.3;pointer-events:none;
+.candles{position:absolute;left:0;right:0;bottom:0;width:100%;height:190px;opacity:.62;pointer-events:none;filter:saturate(1.35) drop-shadow(0 0 10px rgba(63,185,80,.25));
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent),linear-gradient(180deg,#000 55%,transparent);
   mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent),linear-gradient(180deg,#000 55%,transparent);
   -webkit-mask-composite:source-in;mask-composite:intersect}
-@media(max-width:700px){.candles{height:100px;opacity:.2}}
+@media(max-width:700px){.candles{height:120px;opacity:.45}}
+.heroglow:before{background:radial-gradient(680px 300px at 50% 0%,rgba(240,180,41,.22),transparent 70%)}
 </style>
 </head>
 <body>
@@ -413,7 +426,7 @@ function hideTip(tip){tip.style.opacity=0}
 /* decorative candlestick strip in the header; fixed seed so it renders identically every load */
 (function(){
   const box=document.getElementById('candles');if(!box)return;
-  const W=1200,H=160,n=28,w=W/n;
+  const W=1200,H=190,n=28,w=W/n;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,preserveAspectRatio:'none',class:'candles'},box);
   let seed=20260810,rnd=()=>((seed=(seed*1103515245+12345)&0x7fffffff)/0x7fffffff);
   let price=H*.78;
