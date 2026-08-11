@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Проп-Гид — как пройти проп-челлендж математикой, а не удачей</title>
 <meta name="description" content="Гайд по прохождению проп-челленджей (HyroTrader, FTMO и аналоги) + Монте-Карло калькулятор вероятности прохождения. Реальный опыт, честная математика.">
+<script data-goatcounter="https://dimollia.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 <style>
 :root{--bg:#0d1117;--bg2:#161b22;--card:#1c2128;--line:#30363d;--txt:#e6edf3;--mut:#8b949e;--acc:#f0b429;--grn:#3fb950;--red:#f85149;--blu:#58a6ff}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -307,12 +309,17 @@ function simPhase(p,target){
   }
   return{pass:pass/p.sims,bust:bust/p.sims,med:median(days)}
 }
+/* ---------- events (GoatCounter) ---------- */
+function gcEvent(name){try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path:name,title:name,event:true})}catch(e){}}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[rel~="sponsored"]');if(a)gcEvent('aff-'+(a.id||'link'))});
+
 function runCalc(){
   const g=id=>parseFloat(document.getElementById(id).value);
   const p={wr:g('wr')/100,aw:g('aw'),al:g('al'),risk:g('risk')/100,tpm:g('tpm'),hor:g('hor'),
     mdd:g('mdd')/100,dailyFail:(g('dl')-g('db'))/100,thr:document.getElementById('thr').checked,
     static:document.getElementById('ddtype').value==='static',sims:5000};
   if(p.dailyFail<=0){alert('Буфер не может съедать весь дневной лимит');return}
+  gcEvent('calc-run');
   const f1=simPhase(p,g('t1')/100),f2=g('t2')>0?simPhase(p,g('t2')/100):{pass:1,bust:0,med:0};
   const both=f1.pass*f2.pass;
   const set=(id,v)=>document.getElementById(id).textContent=v;
@@ -331,7 +338,7 @@ function runCalc(){
   v.innerHTML=msg+'<div class="note">Ожидание: '+ev.toFixed(2)+'R/сделку · дневной стоп: −'+(p.dailyFail*100).toFixed(1)+'% · просадка: '+(p.static?'static':'trailing')+'</div>';
   document.getElementById('res').classList.add('show');
 }
-function waitOk(f){fetch(f.action,{method:'POST',body:new FormData(f),headers:{Accept:'application/json'}}).then(()=>{document.getElementById('okmsg').style.display='block';f.reset()});return false}
+function waitOk(f){fetch(f.action,{method:'POST',body:new FormData(f),headers:{Accept:'application/json'}}).then(()=>{document.getElementById('okmsg').style.display='block';f.reset();gcEvent('waitlist')});return false}
 
 /* ---------- charts (vanilla SVG) ---------- */
 const NS='http://www.w3.org/2000/svg';
