@@ -90,6 +90,17 @@ tr:nth-child(even) td{background:rgba(255,255,255,.015)}
 form.wait{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 form.wait input[type=email]{flex:1;min-width:220px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:12px}
 .okmsg{color:var(--grn);display:none;margin-top:10px}
+/* ---- trading backdrop ---- */
+body{background:radial-gradient(900px 420px at 12% -8%,rgba(240,180,41,.09),transparent 60%),radial-gradient(820px 400px at 88% 2%,rgba(88,166,255,.07),transparent 60%),var(--bg);background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background-image:linear-gradient(rgba(139,148,158,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(139,148,158,.07) 1px,transparent 1px);background-size:56px 56px}
+body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 80% at 50% 0%,transparent 40%,rgba(13,17,23,.75) 100%)}
+header{background:linear-gradient(180deg,rgba(22,27,34,.9),rgba(13,17,23,0))}
+header .wrap{position:relative;z-index:1}
+.candles{position:absolute;left:0;right:0;bottom:0;width:100%;height:160px;opacity:.3;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent),linear-gradient(180deg,#000 55%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent),linear-gradient(180deg,#000 55%,transparent);
+  -webkit-mask-composite:source-in;mask-composite:intersect}
+@media(max-width:700px){.candles{height:100px;opacity:.2}}
 </style>
 </head>
 <body>
@@ -104,6 +115,7 @@ form.wait input[type=email]{flex:1;min-width:220px;background:var(--bg);border:1
 </div></nav>
 
 <header id="top" class="heroglow">
+<div id="candles" aria-hidden="true"></div>
 <div class="wrap">
 <div style="margin-bottom:14px"><span class="tag">проп-трейдинг</span><span class="tag">риск-менеджмент</span><span class="tag">Монте-Карло</span></div>
 <h1>Проп-челлендж проходит <em>математика</em>,<br>а не удача</h1>
@@ -396,6 +408,22 @@ function hideTip(tip){tip.style.opacity=0}
     if(i%2===0||i===D.length-1)el('text',{x:X(i),y:T+ph+18,'text-anchor':'middle',class:'axis'},svg).textContent=d[0];
   });
   el('text',{x:X(D.length-1)+10,y:Y(3.97)+4,class:'axis',fill:'#e6edf3','font-weight':'700'},svg).textContent='+3.97%';
+})();
+
+/* decorative candlestick strip in the header; fixed seed so it renders identically every load */
+(function(){
+  const box=document.getElementById('candles');if(!box)return;
+  const W=1200,H=160,n=28,w=W/n;
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,preserveAspectRatio:'none',class:'candles'},box);
+  let seed=20260810,rnd=()=>((seed=(seed*1103515245+12345)&0x7fffffff)/0x7fffffff);
+  let price=H*.78;
+  for(let i=0;i<n;i++){
+    const o=price,c=Math.max(18,Math.min(H-18,o-1.1+(rnd()-.5)*26));
+    const up=c<o,col=up?'#3fb950':'#f85149',x=i*w+w/2;
+    el('line',{x1:x,x2:x,y1:Math.min(o,c)-rnd()*8,y2:Math.max(o,c)+rnd()*8,stroke:col,'stroke-width':1.2},svg);
+    el('rect',{x:x-w*.3,y:Math.min(o,c),width:w*.6,height:Math.max(2,Math.abs(c-o)),fill:col},svg);
+    price=c;
+  }
 })();
 </script>
 </body>
