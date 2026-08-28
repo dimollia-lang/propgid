@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://propgid.com/sitemap.xml
