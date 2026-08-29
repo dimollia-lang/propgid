@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Разборы проп-фирм — Проп-Гид</title>
+<meta name="description" content="Due diligence проп-фирм по единому чеклисту из 5 вопросов: пруфы выплат, правила для ботов, тип просадки, юрлицо, способ оплаты. От трейдеров, проходящих проп-челлендж прямо сейчас.">
+<meta property="og:title" content="Разборы проп-фирм — Проп-Гид">
+<meta property="og:description" content="Каждая фирма — через один и тот же чеклист из 5 вопросов. Без рейтингов за деньги.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://propgid.com/razbory.html">
+<script data-goatcounter="https://dimollia.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+<style>
+:root{--bg:#0d1117;--bg2:#161b22;--card:#1c2128;--line:#30363d;--txt:#e6edf3;--mut:#8b949e;--acc:#f0b429;--grn:#3fb950;--red:#f85149;--blu:#58a6ff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:
+  radial-gradient(900px 420px at 10% -8%,rgba(240,180,41,.16),transparent 58%),
+  radial-gradient(800px 400px at 92% 0%,rgba(88,166,255,.13),transparent 58%),
+  linear-gradient(180deg,#111a2b 0%,#0d1117 50%,#0f1420 100%);
+  color:var(--txt);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(139,148,158,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(139,148,158,.06) 1px,transparent 1px);background-size:56px 56px}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .in{max-width:820px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:12px;height:52px;overflow-x:auto;white-space:nowrap}
+nav a.brand{font-weight:800;color:var(--txt);text-decoration:none}
+nav a.brand em{color:var(--acc);font-style:normal}
+nav a.lnk{color:var(--mut);text-decoration:none;font-size:.88rem}
+nav a.lnk:hover{color:var(--txt)}
+nav a.lnk.on{color:var(--acc)}
+nav a.tg{margin-left:auto;color:var(--acc);text-decoration:none;font-size:.88rem;font-weight:600}
+header{padding:44px 0 6px}
+h1{font-size:2rem;line-height:1.25;margin-bottom:10px}
+h1 em{color:var(--acc);font-style:normal}
+p{margin-bottom:13px}
+.mut{color:var(--mut)}
+.grid{display:grid;gap:16px;margin:22px 0}
+@media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+a.rcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;text-decoration:none;color:var(--txt);transition:transform .12s,border-color .12s}
+a.rcard:hover{transform:translateY(-2px);border-color:var(--acc)}
+.rcard .tag{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+.tag.fail{background:rgba(248,81,73,.15);color:var(--red)}
+.tag.pass{background:rgba(63,185,80,.15);color:var(--grn)}
+.tag.soon{background:rgba(139,148,158,.15);color:var(--mut)}
+.rcard h3{font-size:1.1rem;margin-bottom:6px}
+.rcard p{font-size:.9rem;color:var(--mut);margin:0}
+.rcard .go{color:var(--acc);font-size:.85rem;font-weight:600;margin-top:10px;display:inline-block}
+div.rcard{display:block;background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:18px;opacity:.75}
+div.rcard h3{font-size:1.1rem;margin-bottom:6px}
+div.rcard p{font-size:.9rem;color:var(--mut);margin:0}
+.metho{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:18px;margin:8px 0 6px;font-size:.95rem}
+.metho b{color:var(--acc)}
+footer{padding:34px 0 56px;border-top:1px solid var(--line);color:var(--mut);font-size:.85rem;margin-top:44px}
+.note{font-size:.85rem;color:var(--mut);margin-top:10px}
+</style>
+</head>
+<body>
+<nav><div class="in">
+<a class="brand" href="/">Проп-<em>Гид</em></a>
+<a class="lnk" href="/#guide">Гайд</a>
+<a class="lnk" href="/#calc">Калькулятор</a>
+<a class="lnk" href="/#firms">Фирмы</a>
+<a class="lnk on" href="/razbory.html">Разборы</a>
+<a class="tg" href="https://t.me/propgid" target="_blank" rel="noopener">@propgid</a>
+</div></nav>
+
+<header class="wrap">
+<h1>Разборы <em>проп-фирм</em></h1>
+<p class="mut">Каждая фирма проходит через один и тот же чеклист из пяти вопросов — тот самый, которым мы выбирали проп для собственного челленджа. Без рейтингов за деньги: если у разбора есть партнёрская ссылка, это написано прямо в нём, а на вердикт она не влияет.</p>
+</header>
+
+<main class="wrap">
+
+<div class="metho"><b>Методология.</b> Пять вопросов до оплаты: 1) независимые пруфы выплат; 2) ваш стиль торговли разрешён — письменно; 3) какая просадка (static или trailing) и от чего считается; 4) юрлицо и возвратный способ оплаты; 5) возраст фирмы и инфраструктура исполнения. Фирма, проваливающая любой из первых двух, не стоит вашего фи — остальное детали.</div>
+
+<div class="grid">
+
+<a class="rcard" href="/era-trade.html">
+<span class="tag fail">3/5 — мимо</span>
+<h3>Era Trade</h3>
+<p>Ноль независимых payout-пруфов, запрет ботов мелким шрифтом при мониторинге по API, юрлицо не раскрыто, оплата USDT без возврата. Кандидат №2 нашего отбора — не прошёл.</p>
+<span class="go">Читать разбор →</span>
+</a>
+
+<div class="rcard">
+<span class="tag soon">скоро</span>
+<h3>HyroTrader — изнутри</h3>
+<p>Фирма, которую мы выбрали и проходим прямо сейчас: как проверяли «боты разрешены», что показал static drawdown в деле, правило 5 торговых дней и другие грабли — на собственном опыте.</p>
+</div>
+
+<div class="rcard">
+<span class="tag soon">скоро</span>
+<h3>FTMO</h3>
+<p>Эталон выплат с 2015 года — но подходит не всем: кому недоступна, что с алго и почему «самая надёжная» не значит «самая удобная для вас».</p>
+</div>
+
+<div class="rcard">
+<span class="tag soon">скоро</span>
+<h3>The Funded Trader — некролог</h3>
+<p>Как выглядела фирма за месяц до заморозки ~$2M выплат, и какие сигналы из нашего чеклиста горели заранее.</p>
+</div>
+
+</div>
+
+<p class="note">Хотите разбор конкретной фирмы — напишите в <a href="https://t.me/propgid" target="_blank" rel="noopener" style="color:var(--acc)">@propgid</a>: очередь формируем по запросам.</p>
+
+<footer>
+<div>Проп-Гид · <a href="/" style="color:var(--blu)">propgid.com</a> · <a href="https://t.me/propgid" style="color:var(--blu)">@propgid</a></div>
+<p class="note">Не инвестрекомендация. Разборы отражают открытые данные и наш собственный опыт на дату публикации.</p>
+</footer>
+
+</main>
+</body>
+</html>
