@@ -209,6 +209,7 @@ header .wrap{position:relative;z-index:1}
 <div><label>Тип просадки</label><select id="ddtype"><option value="static" selected>Static (от старта)</option><option value="trail">Trailing (от пика)</option></select></div>
 </div>
 <div class="chk"><input type="checkbox" id="thr" checked> <span>Троттлинг: при просадке >4% от пика риск ×0.5</span></div>
+<div class="chk"><input type="checkbox" id="tail" checked> <span>Редкие выбросы: гэпы и проскальзывание (измерено на реальных данных — движения свыше 3σ случаются в 8 раз чаще, чем предполагает нормальное распределение)</span></div>
 <div style="margin-top:16px"><button class="btn" onclick="runCalc()">Посчитать вероятность</button></div>
 <div class="res" id="res">
 <div class="bigrow">
@@ -321,6 +322,7 @@ header .wrap{position:relative;z-index:1}
 </footer>
 
 <script>
+function expRand(mean){return -mean*Math.log(1-Math.random())}
 function poisson(lam){let L=Math.exp(-lam),k=0,p=1;do{k++;p*=Math.random()}while(p>L);return k-1}
 function median(a){if(!a.length)return 0;a.sort((x,y)=>x-y);return a[Math.floor(a.length/2)]}
 function simPhase(p,target){
@@ -332,7 +334,9 @@ function simPhase(p,target){
       if(p.thr&&(peak-eq)/peak>0.04)riskEff=p.risk/2;
       let n=poisson(p.tpm/30),pnl=0,violated=false;
       for(let t=0;t<n;t++){
-        pnl+=(Math.random()<p.wr?p.aw:-p.al)*riskEff;
+        let win=Math.random()<p.wr, mag=win?p.aw:p.al;
+        if(p.tail&&Math.random()<0.02)mag*=3+expRand(4);  /* хвост: 2% сделок, средний множитель ~7x */
+        pnl+=(win?mag:-mag)*riskEff;
         if(pnl<=-p.dailyFail){violated=true;break}
       }
       if(violated){done=-1;break}
@@ -353,7 +357,7 @@ document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest
 function runCalc(){
   const g=id=>parseFloat(document.getElementById(id).value);
   const p={wr:g('wr')/100,aw:g('aw'),al:g('al'),risk:g('risk')/100,tpm:g('tpm'),hor:g('hor'),
-    mdd:g('mdd')/100,dailyFail:(g('dl')-g('db'))/100,thr:document.getElementById('thr').checked,
+    mdd:g('mdd')/100,dailyFail:(g('dl')-g('db'))/100,thr:document.getElementById('thr').checked,tail:document.getElementById('tail').checked,
     static:document.getElementById('ddtype').value==='static',sims:5000};
   if(p.dailyFail<=0){alert('Буфер не может съедать весь дневной лимит');return}
   gcEvent('calc-run');
