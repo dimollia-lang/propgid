@@ -207,6 +207,8 @@ header .wrap{position:relative;z-index:1}
 <div><label>Дневной лимит фирмы, %</label><input type="number" id="dl" value="5" min="1" max="20" step="0.5"></div>
 <div><label>Свой дневной буфер, %</label><input type="number" id="db" value="1" min="0" max="5" step="0.5"></div>
 <div><label>Тип просадки</label><select id="ddtype"><option value="static" selected>Static (от старта)</option><option value="trail">Trailing (от пика)</option></select></div>
+<div><label>Уже пройдено фазы 1, % (0 = с нуля)</label><input type="number" id="prog" value="0" min="-9" max="30" step="0.1"></div>
+<div><label>Дней уже в челлендже</label><input type="number" id="dnow" value="0" min="0" max="700" step="1"></div>
 </div>
 <div class="chk"><input type="checkbox" id="thr" checked> <span>Троттлинг: при просадке >4% от пика риск ×0.5</span></div>
 <div class="chk"><input type="checkbox" id="tail" checked> <span>Редкие выбросы: гэпы и проскальзывание (измерено на реальных данных — движения свыше 3σ случаются в 8 раз чаще, чем предполагает нормальное распределение)</span></div>
@@ -218,6 +220,14 @@ header .wrap{position:relative;z-index:1}
 <div class="big"><div class="v" id="rBust">—</div><div class="l">слить лимиты (bust)</div><div class="bar"><i id="bBust" style="width:0;background:var(--red)"></i></div></div>
 <div class="big"><div class="v" id="rDays">—</div><div class="l">медиана дней (обе фазы)</div></div>
 </div>
+<h3 style="margin-top:18px">Срок до цели фазы 1 <span class="mut" style="font-weight:400;font-size:.85rem" id="ttMode">(с нуля)</span></h3>
+<div class="bigrow">
+<div class="big"><div class="v" id="tMed">—</div><div class="l">медиана, дней</div></div>
+<div class="big"><div class="v" id="tP80">—</div><div class="l">в 8 из 10 случаев быстрее, дней</div></div>
+<div class="big"><div class="v" id="t10">—</div><div class="l">шанс уложиться в 10 дней</div></div>
+<div class="big"><div class="v" id="t90">—</div><div class="l">займёт дольше 90 дней</div></div>
+</div>
+<div class="chart" id="ttChart"><h4>Распределение срока до цели</h4><div class="sub">по прошедшим прогонам · дни от старта (или от текущей точки)</div><svg viewBox="0 0 600 150"></svg><div class="note">Реклама фирм продаёт «пройди за неделю». Распределение показывает, сколько это стоит на самом деле: правый хвост — это недели ожидания сигнала, стопы и паузы после них.</div></div>
 <div id="verdict" class="card"></div>
 <p class="note">Модель: сделки Пуассоном по дням, дневной стоп = лимит фирмы минус ваш буфер (нарушение = bust), просадка считается по закрытию дня. Реальность чуть жёстче за счёт интрадей-флоатинга — поэтому буфер обязателен. Это оценка, не гарантия.</p>
 </div>
@@ -325,11 +335,15 @@ header .wrap{position:relative;z-index:1}
 function expRand(mean){return -mean*Math.log(1-Math.random())}
 function poisson(lam){let L=Math.exp(-lam),k=0,p=1;do{k++;p*=Math.random()}while(p>L);return k-1}
 function median(a){if(!a.length)return 0;a.sort((x,y)=>x-y);return a[Math.floor(a.length/2)]}
-function simPhase(p,target){
+function pct(a,q){if(!a.length)return 0;const s=a.slice().sort((x,y)=>x-y);return s[Math.min(s.length-1,Math.floor(q*s.length))]}
+function simPhase(p,target,start){
+  /* start = {eq:1+прогресс, day:N} — режим «я уже на дне N с +X%»: старт не с нуля, а из текущей точки
+     (пик для trailing принимаем равным текущему эквити — консервативно). Дни считаются ОТ старта. */
   let pass=0,bust=0,days=[];
+  const eq0=start?start.eq:1, d0=start?start.day:0;
   for(let s=0;s<p.sims;s++){
-    let eq=1,peak=1,done=0,d=0;
-    for(d=1;d<=p.hor;d++){
+    let eq=eq0,peak=eq0,done=0,d=d0;
+    for(d=d0+1;d<=p.hor;d++){
       let riskEff=p.risk;
       if(p.thr&&(peak-eq)/peak>0.04)riskEff=p.risk/2;
       let n=poisson(p.tpm/30),pnl=0,violated=false;
@@ -346,9 +360,23 @@ function simPhase(p,target){
       if(eq<=ddRef*(1-p.mdd)){done=-1;break}
       if(eq>=1+target){done=1;break}
     }
-    if(done===1){pass++;days.push(d)}else if(done===-1){bust++}
+    if(done===1){pass++;days.push(d-d0)}else if(done===-1){bust++}
   }
-  return{pass:pass/p.sims,bust:bust/p.sims,med:median(days)}
+  return{pass:pass/p.sims,bust:bust/p.sims,med:median(days.slice()),days:days}
+}
+/* --- гистограмма срока до цели (по прошедшим прогонам) --- */
+function drawTT(days,hor){
+  const box=document.getElementById('ttChart');if(!box)return;
+  const svg=box.querySelector('svg');while(svg.firstChild)svg.removeChild(svg.firstChild);
+  if(!days.length)return;
+  const W=600,H=150,L=34,B=26,nb=20,bw=Math.max(1,Math.ceil(hor/nb));
+  const cnt=new Array(nb).fill(0);days.forEach(x=>{const i=Math.min(nb-1,Math.floor((x-1)/bw));cnt[i]++});
+  const mx=Math.max(...cnt)||1,pw=(W-L-6)/nb;
+  el('line',{x1:L,y1:H-B,x2:W-4,y2:H-B,class:'gridln'},svg);
+  cnt.forEach((c,i)=>{const h=(H-B-10)*c/mx;
+    el('rect',{x:L+i*pw+1,y:H-B-h,width:pw-2,height:h,fill:'var(--acc)',opacity:0.85,rx:2},svg);
+    if(i%4===0){const t=el('text',{x:L+i*pw+pw/2,y:H-8,class:'axis','text-anchor':'middle'},svg);t.textContent=(i*bw+1)+'–'+((i+1)*bw)}});
+  const y=el('text',{x:W-4,y:14,class:'axis','text-anchor':'end'},svg);y.textContent='доля прогонов';
 }
 /* ---------- events (GoatCounter) ---------- */
 function gcEvent(name){try{window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path:name,title:name,event:true})}catch(e){}}
@@ -361,7 +389,17 @@ function runCalc(){
     static:document.getElementById('ddtype').value==='static',sims:5000};
   if(p.dailyFail<=0){alert('Буфер не может съедать весь дневной лимит');return}
   gcEvent('calc-run');
-  const f1=simPhase(p,g('t1')/100),f2=g('t2')>0?simPhase(p,g('t2')/100):{pass:1,bust:0,med:0};
+  const prog=(g('prog')||0)/100, dnow=Math.max(0,g('dnow')||0);
+  const start=(prog!==0||dnow>0)?{eq:1+prog,day:dnow}:null;
+  if(start&&dnow>=p.hor){alert('Дней в челлендже не может быть больше горизонта');return}
+  const f1=simPhase(p,g('t1')/100,start),f2=g('t2')>0?simPhase(p,g('t2')/100):{pass:1,bust:0,med:0,days:[]};
+  const D=f1.days,nD=D.length,share=(f)=>nD?Math.round(100*D.filter(f).length/nD)+'%':'—';
+  document.getElementById('ttMode').textContent=start?'(от текущей точки: день '+dnow+', '+(prog>=0?'+':'')+(prog*100).toFixed(1)+'%)':'(с нуля)';
+  document.getElementById('tMed').textContent=nD?pct(D,0.5):'—';
+  document.getElementById('tP80').textContent=nD?pct(D,0.8):'—';
+  document.getElementById('t10').textContent=share(x=>x<=10);
+  document.getElementById('t90').textContent=share(x=>x>90);
+  drawTT(D,p.hor-dnow);
   const both=f1.pass*f2.pass;
   const set=(id,v)=>document.getElementById(id).textContent=v;
   set('rBoth',(both*100).toFixed(1)+'%');set('rP1',(f1.pass*100).toFixed(1)+'%');
@@ -376,7 +414,8 @@ function runCalc(){
   else if(both>=0.8)msg='<b class="ok">Сильный конфиг.</b> Вероятность выше 80% — уровень, с которым мы сами заходили в челлендж. Главный враг теперь — дисциплина исполнения.';
   else if(both>=0.6)msg='<b class="warn">Проходимо, но с запасом прочности похуже.</b> Попробуйте риск пониже или троттлинг — часто это дешёвый способ добавить 5–10 п.п. вероятности.';
   else msg='<b class="bad">Меньше 60% — лотерея за ваши деньги.</b> Снизьте риск, улучшите R:R или наберите статистику системы. Фирма охотно продаст вам второй экзамен.';
-  v.innerHTML=msg+'<div class="note">Ожидание: '+ev.toFixed(2)+'R/сделку · дневной стоп: −'+(p.dailyFail*100).toFixed(1)+'% · просадка: '+(p.static?'static':'trailing')+'</div>';
+  const tt=nD?' · срок фазы 1: медиана '+pct(D,0.5)+' дн., каждый пятый случай дольше '+pct(D,0.8)+' дн.':'';
+  v.innerHTML=msg+'<div class="note">Ожидание: '+ev.toFixed(2)+'R/сделку · дневной стоп: −'+(p.dailyFail*100).toFixed(1)+'% · просадка: '+(p.static?'static':'trailing')+tt+'</div>';
   document.getElementById('res').classList.add('show');
 }
 function waitOk(f){fetch(f.action,{method:'POST',body:new FormData(f),headers:{Accept:'application/json'}}).then(()=>{document.getElementById('okmsg').style.display='block';f.reset();gcEvent('waitlist')});return false}
